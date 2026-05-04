@@ -53,6 +53,45 @@ export type Database = {
         }
         Relationships: []
       }
+      problem_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          latitude: number
+          longitude: number
+          photo_url: string | null
+          problem_type: Database["public"]["Enums"]["problem_type"]
+          status: Database["public"]["Enums"]["report_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          photo_url?: string | null
+          problem_type: Database["public"]["Enums"]["problem_type"]
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          photo_url?: string | null
+          problem_type?: Database["public"]["Enums"]["problem_type"]
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -137,6 +176,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      problem_type:
+        | "ponto_cheio"
+        | "caminhao_nao_passou"
+        | "ponto_inexistente"
+        | "outro"
+      report_status: "pendente" | "em_andamento" | "resolvido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -265,6 +310,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      problem_type: [
+        "ponto_cheio",
+        "caminhao_nao_passou",
+        "ponto_inexistente",
+        "outro",
+      ],
+      report_status: ["pendente", "em_andamento", "resolvido"],
     },
   },
 } as const

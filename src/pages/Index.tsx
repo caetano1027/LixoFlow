@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import MapView from '@/components/MapView';
 import PointsList from '@/components/PointsList';
+import DisposalReminder from '@/components/DisposalReminder';
+import ReportProblem from '@/components/ReportProblem';
 import { useCollectionPoints } from '@/hooks/useCollectionPoints';
 import { useToast } from '@/hooks/use-toast';
 
@@ -67,6 +69,10 @@ const Index = () => {
           )}
         </div>
         <div className="flex-1 overflow-auto">
+          <div className="flex flex-wrap gap-2 justify-center pt-4 px-4">
+            <DisposalReminder />
+            <ReportProblem />
+          </div>
           <PointsList points={points} userLocation={userLocation} />
         </div>
       </div>

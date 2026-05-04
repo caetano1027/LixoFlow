@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCollectionPoints, useCreatePoint, useUpdatePoint, useDeletePoint, CollectionPoint, CollectionPointInsert } from '@/hooks/useCollectionPoints';
 import { useTruckSchedules, useCreateSchedule, useUpdateSchedule, useDeleteSchedule, TruckSchedule, TruckScheduleInsert } from '@/hooks/useTruckSchedules';
+import { useProblemReports, useUpdateReportStatus, useDeleteReport, PROBLEM_TYPE_LABELS, ReportStatus } from '@/hooks/useProblemReports';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Pencil, Trash2, Plus, Truck } from 'lucide-react';
+import { Pencil, Trash2, Plus, Truck, AlertTriangle } from 'lucide-react';
 
 const emptyForm: CollectionPointInsert = {
   name: '',
@@ -38,6 +40,9 @@ const Admin = () => {
   const createSchedule = useCreateSchedule();
   const updateSchedule = useUpdateSchedule();
   const deleteSchedule = useDeleteSchedule();
+  const { data: reports = [] } = useProblemReports();
+  const updateReportStatus = useUpdateReportStatus();
+  const deleteReport = useDeleteReport();
   const { toast } = useToast();
 
   const [form, setForm] = useState<CollectionPointInsert>(emptyForm);
@@ -270,6 +275,61 @@ const Admin = () => {
           ))}
           {schedules.length === 0 && (
             <p className="text-center text-muted-foreground py-8">Nenhum horário cadastrado.</p>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center pt-6 border-t">
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-primary" /> Problemas reportados
+          </h2>
+        </div>
+
+        <div className="space-y-2">
+          {reports.map((r) => (
+            <Card key={r.id}>
+              <CardContent className="p-4 space-y-2">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium">{PROBLEM_TYPE_LABELS[r.problem_type]}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(r.created_at).toLocaleString('pt-BR')} · {r.latitude.toFixed(4)}, {r.longitude.toFixed(4)}
+                    </p>
+                    {r.description && <p className="text-sm mt-1">{r.description}</p>}
+                    {r.photo_url && (
+                      <a href={r.photo_url} target="_blank" rel="noopener noreferrer">
+                        <img src={r.photo_url} alt="Foto do problema" className="mt-2 rounded max-h-40" />
+                      </a>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <Select
+                      value={r.status}
+                      onValueChange={(v) => updateReportStatus.mutate({ id: r.id, status: v as ReportStatus })}
+                    >
+                      <SelectTrigger className="w-36 h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pendente">Pendente</SelectItem>
+                        <SelectItem value="em_andamento">Em andamento</SelectItem>
+                        <SelectItem value="resolvido">Resolvido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive"
+                      onClick={() => { if (confirm('Excluir este reporte?')) deleteReport.mutate(r.id); }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+          {reports.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">Nenhum problema reportado.</p>
           )}
         </div>
       </div>
